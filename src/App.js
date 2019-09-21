@@ -1,25 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import List from "./List";
+import ListDetails from "./ListDetails";
+import { BrowserRouter } from "react-router-dom";
+import { Route } from "react-router";
+import axios from "axios";
 
 function App() {
+  const [data, setData] = useState([]);
+
+  //the useEffect is a React Hooks that allow us to fetch data from API automatically after each refeshing of DOM
+  useEffect(() => {
+    async function getData() {
+      const getdata = await axios.get(
+        "https://jsonplaceholder.typicode.com/photos"
+      );
+      setData(getdata.data);
+    }
+    getData();
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Route exact path="/" component={() => <List freshdata={data} />} />
+      <Route path="/list/:userId" render={(props) => <ListDetails data={data} {...props}/>}/>
+    </BrowserRouter>
   );
 }
 
